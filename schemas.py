@@ -11,3 +11,17 @@ class UserSchema(BaseModel):
     surname: Optional[str] = None
     city: Optional[str] = None
     date_of_birth: Optional[str] = None
+
+
+class UserPostSchema(BaseModel):
+    main_text: str
+    uid: int
+
+
+class PhotoPostSchema(BaseModel):
+    photo_path: str
+    pid: int
+
+
+class CommentSchema(BaseModel):
+    text: str
