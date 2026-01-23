@@ -25,7 +25,7 @@ def add_comment_db(comment: CommentSchema):
 
 def get_all_comments_exact_post_db(pid):
     db = next(get_db())
-    comments = db.query(Comment).filter_by(Comment.pid == pid).all()
+    comments = db.query(Comment).filter_by(pid=pid).all()
     if comments:
         return comments
     return False
@@ -39,7 +39,7 @@ def get_all_comments_db():
 
 def get_all_comments_exact_user_db(uid):
     db = next(get_db())
-    comments = db.query(Comment).filter_by(Comment.uid == uid).all()
+    comments = db.query(Comment).filter_by(uid=uid).all()
     if comments:
         return comments
     return False
@@ -47,7 +47,7 @@ def get_all_comments_exact_user_db(uid):
 
 def get_exact_comment_db(cid):
     db = next(get_db())
-    exact_comment = db.query(Comment).filter_by(Comment.id == cid).first()
+    exact_comment = db.query(Comment).filter_by(id = cid).first()
     if exact_comment:
         return exact_comment
     return False
@@ -65,7 +65,7 @@ def delete_comment_db(cid):
 
 def edit_comment_db(cid: int, new_text: str):
     db = next(get_db())
-    comment = db.query(Comment).filter_by(Comment.id == cid).first()
+    comment = db.query(Comment).filter(id=cid).first()
     if comment:
         comment.text = new_text
         db.commit()

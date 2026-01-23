@@ -2,6 +2,8 @@ from pydantic import BaseModel
 from typing import Optional
 
 
+
+
 class UserSchema(BaseModel):
     phone_number: str
     password: str
@@ -25,3 +27,10 @@ class PhotoPostSchema(BaseModel):
 
 class CommentSchema(BaseModel):
     text: str
+    uid: int
+    pid: int
+
+
+class ResultSchema(BaseModel):
+    status: int
+    message: bool

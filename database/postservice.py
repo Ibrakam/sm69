@@ -39,6 +39,17 @@ def get_all_user_posts_db(uid):
         return user_posts
     return False
 
+def add_photo_post_db(photo: PhotoPostSchema):
+    db = next(get_db())
+    photo_data = photo.model_dump()
+    exact_post = get_exact_post_db(photo_data.get("pid"))
+    if exact_post:
+        photo = PostPhoto(**photo_data)
+        db.add(photo)
+        db.commit()
+        return True
+    return False
+
 
 def get_all_posts_db():
     db = next(get_db())
