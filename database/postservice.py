@@ -15,7 +15,7 @@ from database import get_db
 
 def get_exact_post_db(pid):
     db = next(get_db())
-    post = db.query(UserPost).filter_by(UserPost.id == pid).first()
+    post = db.query(UserPost).filter_by(id = pid).first()
     if post:
         return post
     return False
@@ -34,7 +34,7 @@ def create_post_db(post: UserPostSchema):
 
 def get_all_user_posts_db(uid):
     db = next(get_db())
-    user_posts = db.query(UserPost).filter_by(UserPost.uid == uid).all()
+    user_posts = db.query(UserPost).filter_by(uid = uid).all()
     if user_posts:
         return user_posts
     return False

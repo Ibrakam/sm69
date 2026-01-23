@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retrowave - Авторизация</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --retro-peach: #FFB4A2;
+            --retro-lavender: #B5838D;
+            --retro-mint: #6D9E8B;
+            --retro-cream: #FAF3E0;
+            --retro-coral: #E07A5F;
+            --retro-navy: #3D405B;
+            --glass-bg: rgba(255, 255, 255, 0.08);
+            --glass-bg-hover: rgba(255, 255, 255, 0.12);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            --glass-border-hover: rgba(255, 255, 255, 0.25);
+            --text-primary: #FAF3E0;
+            --text-secondary: rgba(250, 243, 224, 0.7);
+            --transition-speed: 0.4s;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        @keyframes fadeIn {
+            from { 
+                opacity: 0; 
+                transform: translateY(30px) scale(0.95);
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            92% { opacity: 1; }
+            93% { opacity: 0.8; }
+            94% { opacity: 1; }
+            97% { opacity: 0.9; }
+            98% { opacity: 1; }
+        }
+
+        @keyframes scanline {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100vh); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { 
+                box-shadow: 0 0 30px rgba(255, 180, 162, 0.2),
+                            0 20px 60px rgba(0, 0, 0, 0.3);
+            }
+            50% { 
+                box-shadow: 0 0 50px rgba(255, 180, 162, 0.3),
+                            0 20px 60px rgba(0, 0, 0, 0.3),
+                            0 0 80px rgba(181, 131, 141, 0.2);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes typewriter {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        @keyframes blink {
+            50% { border-color: transparent; }
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: 'Space Mono', monospace;
+            color: var(--text-primary);
+            overflow-x: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, 
+                #2C1810 0%, 
+                #3D405B 25%, 
+                #B5838D 50%, 
+                #6D9E8B 75%, 
+                #3D405B 100%
+            );
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+        }
+
+        /* Scanlines overlay */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0, 0, 0, 0.03) 2px,
+                rgba(0, 0, 0, 0.03) 4px
+            );
+        }
+
+        /* VHS tracking line */
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 180, 162, 0.1);
+            z-index: 9998;
+            animation: scanline 8s linear infinite;
+            pointer-events: none;
+        }
+
+        /* Noise texture overlay */
+        .noise-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9997;
+            opacity: 0.02;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+        }
+
+        /* Decorative elements */
+        .decor-circle {
+            position: fixed;
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0.1;
+        }
+
+        .decor-circle-1 {
+            width: 400px;
+            height: 400px;
+            top: -100px;
+            left: -100px;
+            background: radial-gradient(circle, var(--retro-peach) 0%, transparent 70%);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .decor-circle-2 {
+            width: 300px;
+            height: 300px;
+            bottom: -50px;
+            right: -50px;
+            background: radial-gradient(circle, var(--retro-mint) 0%, transparent 70%);
+            animation: float 8s ease-in-out infinite reverse;
+        }
+
+        .decor-circle-3 {
+            width: 200px;
+            height: 200px;
+            top: 50%;
+            right: 10%;
+            background: radial-gradient(circle, var(--retro-lavender) 0%, transparent 70%);
+            animation: float 7s ease-in-out infinite;
+        }
+
+        .auth-container {
+            width: 100%;
+            max-width: 440px;
+            padding: 20px;
+            animation: fadeIn 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        .auth-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--glass-border);
+            border-radius: 28px;
+            padding: 50px 40px;
+            position: relative;
+            overflow: hidden;
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        .auth-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--retro-peach), var(--retro-lavender), var(--retro-mint), var(--retro-peach));
+            background-size: 300% 100%;
+            animation: gradientShift 3s linear infinite;
+        }
+
+        .auth-card::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 28px;
+            padding: 1px;
+            background: linear-gradient(135deg, 
+                rgba(255, 180, 162, 0.3), 
+                transparent 50%,
+                rgba(109, 158, 139, 0.3)
+            );
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 42px;
+            font-weight: 700;
+            font-style: italic;
+            margin: 0;
+            color: var(--retro-cream);
+            text-shadow: 
+                0 0 20px rgba(255, 180, 162, 0.5),
+                0 0 40px rgba(255, 180, 162, 0.3),
+                0 0 60px rgba(255, 180, 162, 0.2);
+            letter-spacing: 3px;
+            animation: flicker 10s infinite;
+        }
+
+        .logo p {
+            margin: 12px 0 0;
+            font-size: 12px;
+            color: var(--text-secondary);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 35px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 14px;
+            padding: 5px;
+            position: relative;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 14px 20px;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: all var(--transition-speed);
+            border-radius: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .tab.active {
+            color: var(--retro-cream);
+        }
+
+        .tab-indicator {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            width: calc(50% - 5px);
+            height: calc(100% - 10px);
+            background: var(--glass-bg-hover);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            transition: transform var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .tab-indicator.right {
+            transform: translateX(100%);
+        }
+
+        .form-container {
+            position: relative;
+            min-height: 280px;
+        }
+
+        .form {
+            position: absolute;
+            width: 100%;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateX(20px);
+            transition: all var(--transition-speed);
+        }
+
+        .form.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(0);
+            position: relative;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            color: var(--text-secondary);
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper .icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 18px;
+            opacity: 0.5;
+            transition: opacity var(--transition-speed);
+        }
+
+        .input-wrapper input:focus + .icon,
+        .input-wrapper input:not(:placeholder-shown) + .icon {
+            opacity: 1;
+        }
+
+        input {
+            width: 100%;
+            font-family: 'Space Mono', monospace;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
+            color: var(--text-primary);
+            padding: 16px 16px 16px 50px;
+            font-size: 14px;
+            transition: all var(--transition-speed);
+        }
+
+        input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--retro-peach);
+            background: rgba(0, 0, 0, 0.4);
+            box-shadow: 0 0 25px rgba(255, 180, 162, 0.15);
+        }
+
+        input:not(:placeholder-shown):valid {
+            border-color: var(--retro-mint);
+        }
+
+        .submit-btn {
+            width: 100%;
+            font-family: 'Space Mono', monospace;
+            background: linear-gradient(135deg, var(--retro-coral), var(--retro-lavender));
+            color: white;
+            border: none;
+            border-radius: 14px;
+            padding: 16px 30px;
+            font-weight: 700;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            cursor: pointer;
+            transition: all var(--transition-speed);
+            position: relative;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .submit-btn::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(224, 122, 95, 0.35);
+        }
+
+        .submit-btn:hover::before {
+            left: 100%;
+        }
+
+        .submit-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 30px 0;
+            color: var(--text-secondary);
+            font-size: 11px;
+            letter-spacing: 2px;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--glass-border), transparent);
+        }
+
+        .divider span {
+            padding: 0 20px;
+            text-transform: uppercase;
+        }
+
+        .social-login {
+            display: flex;
+            gap: 12px;
+        }
+
+        .social-btn {
+            flex: 1;
+            padding: 14px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 22px;
+            transition: all var(--transition-speed);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .social-btn:hover {
+            background: var(--glass-bg-hover);
+            border-color: var(--glass-border-hover);
+            transform: translateY(-2px);
+        }
+
+        .social-btn.vk:hover {
+            box-shadow: 0 0 20px rgba(0, 119, 255, 0.2);
+        }
+
+        .social-btn.telegram:hover {
+            box-shadow: 0 0 20px rgba(0, 136, 204, 0.2);
+        }
+
+        .social-btn.google:hover {
+            box-shadow: 0 0 20px rgba(234, 67, 53, 0.2);
+        }
+
+        .footer-text {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .footer-text a {
+            color: var(--retro-peach);
+            text-decoration: none;
+            font-weight: 700;
+            transition: all var(--transition-speed);
+            position: relative;
+        }
+
+        .footer-text a::after {
+            content: "";
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: var(--retro-peach);
+            transition: width var(--transition-speed);
+        }
+
+        .footer-text a:hover::after {
+            width: 100%;
+        }
+
+        /* Success animation */
+        .success-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+
+        .success-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .success-content {
+            text-align: center;
+            animation: fadeIn 0.5s;
+        }
+
+        .success-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+
+        .success-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            color: var(--retro-cream);
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(61, 64, 91, 0.3);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, var(--retro-peach), var(--retro-lavender));
+            border-radius: 10px;
+            border: 2px solid transparent;
+            background-clip: padding-box;
+        }
+
+        @media (max-width: 480px) {
+            .auth-card {
+                padding: 40px 25px;
+                border-radius: 20px;
+            }
+            .logo h1 {
+                font-size: 32px;
+            }
+            .tab {
+                font-size: 11px;
+                padding: 12px 10px;
+                letter-spacing: 1px;
+            }
+            input {
+                padding: 14px 14px 14px 45px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="noise-overlay"></div>
+    <div class="decor-circle decor-circle-1"></div>
+    <div class="decor-circle decor-circle-2"></div>
+    <div class="decor-circle decor-circle-3"></div>
+
+    <div class="success-overlay" id="successOverlay">
+        <div class="success-content">
+            <div class="success-icon">✨</div>
+            <div class="success-text">Добро пожаловать!</div>
+        </div>
+    </div>
+
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="logo">
+                <h1>Retrowave</h1>
+                <p>Добро пожаловать</p>
+            </div>
+
+            <div class="tabs">
+                <div class="tab-indicator" id="tabIndicator"></div>
+                <div class="tab active" data-tab="login" onclick="switchTab('login')">Вход</div>
+                <div class="tab" data-tab="register" onclick="switchTab('register')">Регистрация</div>
+            </div>
+
+            <div class="form-container">
+                <!-- Login Form -->
+                <form class="form active" id="loginForm">
+                    <div class="form-group">
+                        <label>Имя пользователя</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="loginUsername" placeholder="username" required>
+                            <span class="icon">◈</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Пароль</label>
+                        <div class="input-wrapper">
+                            <input type="password" id="loginPassword" placeholder="••••••••" required>
+                            <span class="icon">◆</span>
+                        </div>
+                    </div>
+                    <button type="submit" class="submit-btn">Войти</button>
+                </form>
+
+                <!-- Register Form -->
+                <form class="form" id="registerForm">
+                    <div class="form-group">
+                        <label>Имя</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="regName" placeholder="Иван" required>
+                            <span class="icon">◇</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Фамилия</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="regSurname" placeholder="Иванов" required>
+                            <span class="icon">◇</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Имя пользователя</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="regUsername" placeholder="username" required>
+                            <span class="icon">◈</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Пароль</label>
+                        <div class="input-wrapper">
+                            <input type="password" id="regPassword" placeholder="••••••••" required minlength="6">
+                            <span class="icon">◆</span>
+                        </div>
+                    </div>
+                    <button type="submit" class="submit-btn">Создать аккаунт</button>
+                </form>
+            </div>
+
+            <div class="divider">
+                <span>или</span>
+            </div>
+
+            <div class="social-login">
+                <button type="button" class="social-btn vk" title="VK">
+                    <span>В</span>
+                </button>
+                <button type="button" class="social-btn telegram" title="Telegram">
+                    <span>✈</span>
+                </button>
+                <button type="button" class="social-btn google" title="Google">
+                    <span>G</span>
+                </button>
+            </div>
+
+            <div class="footer-text">
+                <a href="/">← Вернуться на главную</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tab) {
+            const tabs = document.querySelectorAll('.tab');
+            const forms = document.querySelectorAll('.form');
+            const indicator = document.getElementById('tabIndicator');
+
+            tabs.forEach(t => t.classList.remove('active'));
+            forms.forEach(f => f.classList.remove('active'));
+
+            document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
+            document.getElementById(tab === 'login' ? 'loginForm' : 'registerForm').classList.add('active');
+            
+            if (tab === 'register') {
+                indicator.classList.add('right');
+            } else {
+                indicator.classList.remove('right');
+            }
+        }
+
+        </script>
+</body>
+</html>

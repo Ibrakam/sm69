@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retrowave - Feed</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --retro-peach: #FFB4A2;
+            --retro-lavender: #B5838D;
+            --retro-mint: #6D9E8B;
+            --retro-cream: #FAF3E0;
+            --retro-coral: #E07A5F;
+            --retro-navy: #3D405B;
+            --glass-bg: rgba(255, 255, 255, 0.08);
+            --glass-bg-hover: rgba(255, 255, 255, 0.12);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            --glass-border-hover: rgba(255, 255, 255, 0.25);
+            --text-primary: #FAF3E0;
+            --text-secondary: rgba(250, 243, 224, 0.7);
+            --transition-speed: 0.4s;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        @keyframes fadeSlideUp {
+            from { 
+                opacity: 0; 
+                transform: translateY(40px) scale(0.95);
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            92% { opacity: 1; }
+            93% { opacity: 0.8; }
+            94% { opacity: 1; }
+            97% { opacity: 0.9; }
+            98% { opacity: 1; }
+        }
+
+        @keyframes scanline {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100vh); }
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: 'Space Mono', monospace;
+            color: var(--text-primary);
+            overflow-x: hidden;
+            background: linear-gradient(135deg, 
+                #2C1810 0%, 
+                #3D405B 25%, 
+                #B5838D 50%, 
+                #6D9E8B 75%, 
+                #3D405B 100%
+            );
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+        }
+
+        /* Scanlines overlay */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0, 0, 0, 0.03) 2px,
+                rgba(0, 0, 0, 0.03) 4px
+            );
+        }
+
+        /* VHS tracking line */
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 180, 162, 0.1);
+            z-index: 9998;
+            animation: scanline 8s linear infinite;
+            pointer-events: none;
+        }
+
+        /* Noise texture overlay */
+        .noise-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9997;
+            opacity: 0.02;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+        }
+
+        nav {
+            width: 100%;
+            height: 70px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            z-index: 1000;
+            animation: flicker 10s infinite;
+        }
+
+        .nav-content {
+            width: 100%;
+            max-width: 935px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            font-weight: 700;
+            font-style: italic;
+            color: var(--retro-cream);
+            cursor: pointer;
+            transition: all var(--transition-speed);
+            text-shadow: 
+                0 0 10px rgba(255, 180, 162, 0.5),
+                0 0 20px rgba(255, 180, 162, 0.3),
+                0 0 40px rgba(255, 180, 162, 0.2);
+            letter-spacing: 2px;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+            text-shadow: 
+                0 0 15px rgba(255, 180, 162, 0.8),
+                0 0 30px rgba(255, 180, 162, 0.5),
+                0 0 60px rgba(255, 180, 162, 0.3);
+        }
+
+        .feed {
+            margin-top: 110px;
+            margin-bottom: 50px;
+            width: 100%;
+            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            padding: 0 20px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .post {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            overflow: hidden;
+            animation: fadeSlideUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+            transition: all var(--transition-speed) ease;
+            position: relative;
+        }
+
+        .post::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 20px;
+            padding: 1px;
+            background: linear-gradient(135deg, 
+                rgba(255, 180, 162, 0.3), 
+                rgba(181, 131, 141, 0.1), 
+                rgba(109, 158, 139, 0.3)
+            );
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity var(--transition-speed);
+        }
+
+        .post:hover {
+            background: var(--glass-bg-hover);
+            border-color: var(--glass-border-hover);
+            transform: translateY(-4px);
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.3),
+                0 0 60px rgba(255, 180, 162, 0.1);
+        }
+
+        .post:hover::before {
+            opacity: 1;
+        }
+
+        .post-header {
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .avatar {
+            width: 44px;
+            height: 44px;
+            padding: 3px;
+            border-radius: 50%;
+            margin-right: 14px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, var(--retro-peach), var(--retro-lavender), var(--retro-mint));
+            position: relative;
+            transition: all var(--transition-speed);
+        }
+
+        .avatar::before {
+            content: "";
+            position: absolute;
+            inset: -3px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--retro-peach), var(--retro-lavender), var(--retro-mint));
+            z-index: -1;
+            opacity: 0;
+            filter: blur(8px);
+            transition: opacity var(--transition-speed);
+        }
+
+        .post:hover .avatar::before {
+            opacity: 0.6;
+        }
+
+        /* Chromatic aberration on hover */
+        .post:hover .avatar {
+            animation: chromatic 0.3s ease;
+        }
+
+        @keyframes chromatic {
+            0%, 100% { 
+                filter: none;
+            }
+            25% {
+                filter: drop-shadow(-2px 0 0 rgba(255, 0, 0, 0.5)) drop-shadow(2px 0 0 rgba(0, 255, 255, 0.5));
+            }
+            75% {
+                filter: drop-shadow(1px 0 0 rgba(255, 0, 0, 0.3)) drop-shadow(-1px 0 0 rgba(0, 255, 255, 0.3));
+            }
+        }
+
+        .avatar-inner {
+            width: 100%;
+            height: 100%;
+            background: var(--retro-navy);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--retro-cream);
+            font-family: 'Playfair Display', serif;
+        }
+
+        .username {
+            font-weight: 700;
+            font-size: 14px;
+            transition: all var(--transition-speed);
+            letter-spacing: 0.5px;
+        }
+
+        .username a {
+            color: var(--text-primary);
+            text-decoration: none;
+            position: relative;
+        }
+
+        .username a::after {
+            content: "";
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: var(--retro-peach);
+            transition: width var(--transition-speed);
+        }
+
+        .username a:hover::after {
+            width: 100%;
+        }
+
+        .post-image-placeholder {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            background: linear-gradient(135deg, 
+                rgba(45, 35, 30, 0.8) 0%, 
+                rgba(61, 64, 91, 0.6) 50%, 
+                rgba(109, 158, 139, 0.4) 100%
+            );
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 80px;
+            position: relative;
+            overflow: hidden;
+            border-top: 1px solid var(--glass-border);
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .post-image-placeholder::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent 0px,
+                transparent 3px,
+                rgba(0, 0, 0, 0.05) 3px,
+                rgba(0, 0, 0, 0.05) 6px
+            );
+            pointer-events: none;
+        }
+
+        .post-image-placeholder .retro-icon {
+            filter: grayscale(30%) sepia(20%);
+            transition: all var(--transition-speed);
+        }
+
+        .post:hover .post-image-placeholder .retro-icon {
+            filter: grayscale(0%) sepia(0%);
+            transform: scale(1.1);
+        }
+
+        .post-actions {
+            padding: 14px 20px;
+            display: flex;
+            gap: 20px;
+        }
+
+        .action-icon {
+            font-size: 26px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            filter: grayscale(50%);
+        }
+
+        .action-icon:hover {
+            transform: scale(1.2) rotate(-5deg);
+            filter: grayscale(0%);
+        }
+
+        .action-icon:active {
+            transform: scale(0.9);
+        }
+
+        .post-content {
+            padding: 0 20px 20px 20px;
+        }
+
+        .post-text {
+            font-size: 14px;
+            line-height: 22px;
+            margin-bottom: 10px;
+        }
+
+        .post-text span {
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+            margin-right: 10px;
+            color: var(--retro-peach);
+        }
+
+        .post-date {
+            color: var(--text-secondary);
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 400;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(61, 64, 91, 0.3);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, var(--retro-peach), var(--retro-lavender));
+            border-radius: 10px;
+            border: 2px solid transparent;
+            background-clip: padding-box;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, var(--retro-coral), var(--retro-lavender));
+            background-clip: padding-box;
+        }
+
+        /* Responsive */
+        @media (max-width: 540px) {
+            .feed {
+                padding: 0 12px;
+                gap: 16px;
+            }
+            .post {
+                border-radius: 16px;
+            }
+            .logo {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="noise-overlay"></div>
+    
+    <nav>
+        <div class="nav-content">
+            <div class="logo">Retrowave</div>
+        </div>
+    </nav>
+
+    <div class="feed">
+        {% for post in all_posts %}
+        <div class="post" style="animation-delay: {{ loop.index0 * 0.12 }}s">
+            <div class="post-header">
+                <div class="avatar">
+                    <div class="avatar-inner">{{ post.user_fk.username[0] | upper }}</div>
+                </div>
+                <div class="username"><a href="/user/{{ post.uid }}">{{ post.user_fk.username }}</a></div>
+            </div>
+            
+            <div class="post-image-placeholder">
+                <span class="retro-icon">📼</span>
+            </div>
+
+            <div class="post-actions">
+                <div class="action-icon">♡</div>
+                <div class="action-icon">◇</div>
+                <div class="action-icon">↗</div>
+            </div>
+
+            <div class="post-content">
+                <div class="post-text">
+                    <span>{{ post.user_fk.username }}</span>{{ post.main_text }}
+                </div>
+                <div class="post-date">{{ post.reg_date.strftime('%B %d, %Y') if post.reg_date else 'Just now' }}</div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>

@@ -42,7 +42,7 @@ async def edit_post_api(pid: int, text: str):
     return result_message(result)
 
 
-@post_router.post('/delete_post/{pid}')
+@post_router.delete('/delete_post/{pid}')
 async def delete_post_api(pid: int):
     result = delete_post_db(pid)
     return result_message(result)
