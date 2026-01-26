@@ -65,7 +65,7 @@ def delete_comment_db(cid):
 
 def edit_comment_db(cid: int, new_text: str):
     db = next(get_db())
-    comment = db.query(Comment).filter(id=cid).first()
+    comment = db.query(Comment).filter_by(id=cid).first()
     if comment:
         comment.text = new_text
         db.commit()

@@ -13,6 +13,13 @@ def get_all_or_exact_user(uid=0):
     return all_users
 
 
+def get_user_by_username_db(username):
+    db = next(get_db())
+    user = db.query(User).filter_by(username=username).first()
+    if user:
+        return user
+    return False
+
 
 def create_user_db(user: UserSchema):
     db = next(get_db())

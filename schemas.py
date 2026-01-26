@@ -34,3 +34,8 @@ class CommentSchema(BaseModel):
 class ResultSchema(BaseModel):
     status: int
     message: bool
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str

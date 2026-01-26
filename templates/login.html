@@ -623,18 +623,18 @@
 
             <div class="form-container">
                 <!-- Login Form -->
-                <form class="form active" id="loginForm">
+                <form class="form active" id="loginForm" method="POST" action="/login">
                     <div class="form-group">
                         <label>Имя пользователя</label>
                         <div class="input-wrapper">
-                            <input type="text" id="loginUsername" placeholder="username" required>
+                            <input type="text" id="loginUsername" placeholder="username" name="username" required>
                             <span class="icon">◈</span>
                         </div>
                     </div>
                     <div class="form-group">
                         <label>Пароль</label>
                         <div class="input-wrapper">
-                            <input type="password" id="loginPassword" placeholder="••••••••" required>
+                            <input type="password" id="loginPassword" placeholder="••••••••" name="password" required>
                             <span class="icon">◆</span>
                         </div>
                     </div>
