@@ -15,12 +15,23 @@ from fastapi.security import OAuth2PasswordRequestForm
 from datetime import timedelta, datetime
 from typing import Optional
 from config import access_token_exp_min, secret_key, algorithm
+from admin import UserAdmin, UserPostAdmin
+from sqladmin import Admin
+
+
 
 
 
 templates = Jinja2Templates(directory="templates")
 
 app = FastAPI(docs_url="/docs")
+
+admin = Admin(app, engine)
+admin.add_view(UserAdmin)
+admin.add_view(UserPostAdmin)
+
+
+
 app.include_router(photo_router)
 app.include_router(comment_router)
 app.include_router(post_router)
@@ -64,6 +75,7 @@ async def create_access_token(data):
 @app.post("/token", response_model=TokenSchema)
 async def login(form: OAuth2PasswordRequestForm = Depends()):
     user = get_user_by_username_db(form.username)
+    
     if not form.username and verify_password(form.username, user.password):
         return _credentials_exception()
     
