@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request, Form
+from fastapi import FastAPI, Request, Form, Depends
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from jose import jwt
@@ -9,7 +9,7 @@ from api.post_api import post_router
 from database import Base, engine
 from database.postservice import get_all_posts_db, get_all_user_posts_db
 from database.userservice import get_all_or_exact_user, get_user_by_username_db
-from schemas import Token
+from schemas import TokenSchema, UserSchema
 from deps import get_current_user, _credentials_exception
 from fastapi.security import OAuth2PasswordRequestForm
 from datetime import timedelta, datetime
@@ -59,6 +59,26 @@ async def create_access_token(data):
     encoded_jwt = jwt.encode(to_encode, secret_key, algorithm=algorithm)
 
     return encoded_jwt
+
+
+@app.post("/token", response_model=TokenSchema)
+async def login(form: OAuth2PasswordRequestForm = Depends()):
+    user = get_user_by_username_db(form.username)
+    if not form.username and verify_password(form.username, user.password):
+        return _credentials_exception()
+    
+    access_token = await create_access_token(data={"sub": user.username})
+    return {"access_token": access_token,
+            "token_type": "bearer"}
+
+@app.get("/user/me")
+async def get_user(user: UserSchema = Depends(get_current_user)):
+    return user
+
+
+
+
+
 
 @app.post("/login", response_class=HTMLResponse)
 async def login_form(username: str = Form(...),

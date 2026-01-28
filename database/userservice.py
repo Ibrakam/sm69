@@ -25,8 +25,6 @@ def create_user_db(user: UserSchema):
     db = next(get_db())
     user_data = user.model_dump()
     new_user = User(**user_data)
-    if get_all_or_exact_user(new_user.id):
-        return False
     db.add(new_user)
     db.commit()
     return True
